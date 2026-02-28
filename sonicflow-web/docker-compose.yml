@@ -1,0 +1,46 @@
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: sonicflow-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: sonicflow
+      POSTGRES_PASSWORD: sonicflow_password
+      POSTGRES_DB: sonicflow
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sonicflow"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # SonicFlow Web Application
+  sonicflow-web:
+    build: .
+    container_name: sonicflow-web
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      - DATABASE_URL=postgresql://sonicflow:sonicflow_password@postgres:5432/sonicflow
+      - NEXT_PUBLIC_APP_URL=http://localhost:3100
+    ports:
+      - "3100:3000"
+    volumes:
+      - ./:/app
+      - /app/node_modules
+      - /app/.next
+    command: npm run start
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  default:
+    name: sonicflow-network

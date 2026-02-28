@@ -1,0 +1,84 @@
+'use server'
+
+import { NextResponse } from 'next/server'
+import { cookies } from 'next/headers'
+import { logAuthEvent } from '@/lib/oauth-client'
+
+/**
+ * Amazon Token Refresh Endpoint
+ * Refreshes tokens before expiration
+ */
+
+export async function POST() {
+  try {
+    const cookieStore = await cookies()
+    const sessionCookie = cookieStore.get('sonicflow_session')?.value
+
+    if (!sessionCookie) {
+      return NextResponse.json(
+        { error: 'No valid session found' },
+        { status: 401 }
+      )
+    }
+
+    const session = JSON.parse(sessionCookie)
+
+    if (session.provider !== 'amazon') {
+      return NextResponse.json(
+        { error: 'Not an Amazon session' },
+        { status: 400 }
+      )
+    }
+
+    // Validate token isn't expired
+    const expiryDate = new Date(session.expiresAt)
+    const now = new Date()
+    const timeLeft = expiryDate.getTime() - now.getTime()
+
+    if (timeLeft > 5 * 60 * 1000) {
+      // Not yet expired (no refresh needed)
+      return NextResponse.json({
+        success: true,
+        needRefresh: false,
+      })
+    }
+
+    // Implement token refresh logic here
+    // await refreshAccessToken('amazon', session.refreshToken)
+
+    // For now, invalidate session and require new login
+    await cookieStore.delete('sonicflow_session')
+
+    await logAuthEvent('refresh', {
+      provider: 'amazon',
+      action: 'token_expired',
+      tokenStillValid: false,
+    })
+
+    return NextResponse.json({
+      success: true,
+      needRefresh: true,
+      message: 'Token expired - please login again',
+    })
+  } catch (error) {
+    console.error('Amazon token refresh error:', error)
+
+    if (error instanceof Error) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: error.message,
+        },
+        { status: 500 }
+      )
+    }
+
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'Unknown error occurred',
+      },
+      { status: 500 }
+    )
+  }
+}
