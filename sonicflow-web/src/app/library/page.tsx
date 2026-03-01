@@ -1,39 +1,72 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { Search, Filter, Play, Plus, X, Heart, Moon, Music, Sparkles } from 'lucide-react';
-import { AudioWaveform, SongCard } from '@/components/library';
+import { Search, Filter, Plus, X, Music, Sparkles } from 'lucide-react';
+import { SongCard } from '@/components/library';
+
+interface LibrarySong {
+  id: string;
+  title: string;
+  artist: string;
+  imageUrl?: string;
+  duration?: number;
+  style?: string;
+  mood?: string;
+  [key: string]: unknown;
+}
+
+const normalizeSongs = (data: unknown): LibrarySong[] => {
+  if (!Array.isArray(data)) {
+    return [];
+  }
+
+  return data
+    .filter((item): item is Record<string, unknown> => typeof item === 'object' && item !== null)
+    .map((item, index) => ({
+      id: typeof item.id === 'string' ? item.id : `song-${index}`,
+      title: typeof item.title === 'string' ? item.title : 'Untitled',
+      artist: typeof item.artist === 'string' ? item.artist : 'Unknown Artist',
+      imageUrl:
+        typeof item.imageUrl === 'string'
+          ? item.imageUrl
+          : typeof item.coverUrl === 'string'
+            ? item.coverUrl
+            : typeof item.cover === 'string'
+              ? item.cover
+              : undefined,
+      duration: typeof item.duration === 'number' ? item.duration : undefined,
+      style: typeof item.style === 'string' ? item.style : undefined,
+      mood: typeof item.mood === 'string' ? item.mood : undefined,
+      ...item,
+    }));
+};
 
 export default function LibraryPage() {
-  const [songs, setSongs] = useState<any[]>([]);
-  const [filteredSongs, setFilteredSongs] = useState<any[]>([]);
+  const [songs, setSongs] = useState<LibrarySong[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStyle, setFilterStyle] = useState('All');
   const [filterMood, setFilterMood] = useState('All');
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [audioContext, setAudioContext] = useState<any>(null);
 
   useEffect(() => {
     // Fetch songs
     fetch('/api/songs')
       .then((res) => res.json())
       .then((data) => {
-        setSongs(data.songs);
-        setFilteredSongs(data.songs);
+        setSongs(normalizeSongs(data?.songs));
       });
   }, []);
 
-  // Filter songs
-  useEffect(() => {
-    let filtered = songs;
+  const filteredSongs = useMemo(() => {
+    let filtered = [...songs];
 
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter(
         (song) =>
-          song.title?.toLowerCase().includes(query) ||
-          song.artist?.toLowerCase().includes(query)
+          song.title.toLowerCase().includes(query) ||
+          song.artist.toLowerCase().includes(query)
       );
     }
 
@@ -45,16 +78,8 @@ export default function LibraryPage() {
       filtered = filtered.filter((song) => song.mood === filterMood);
     }
 
-    setFilteredSongs(filtered);
+    return filtered;
   }, [songs, searchQuery, filterStyle, filterMood]);
-
-  const handlePlay = () => {
-    if (typeof window !== 'undefined' && 'AudioContext' in window) {
-      const context = new (window as any).AudioContext();
-      setAudioContext(context);
-      context.resume();
-    }
-  };
 
   const styles = ['All', 'Synthwave', 'Electronic', 'Chill', 'Pop', 'Rock', 'Jazz'];
   const moods = ['All', 'Energetic', 'Chill', 'Melancholic', 'Happy', 'Focus'];

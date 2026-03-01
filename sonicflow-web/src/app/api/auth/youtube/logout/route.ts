@@ -2,7 +2,7 @@
 
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
-import { getAuthHeaders, logAuthEvent } from '@/lib/oauth-client'
+import { logAuthEvent } from '@/lib/oauth-client'
 
 /**
  * YouTube Logout Handler
@@ -11,8 +11,6 @@ import { getAuthHeaders, logAuthEvent } from '@/lib/oauth-client'
 
 export async function POST() {
   try {
-    const authHeaders = await getAuthHeaders()
-
     // Invalidate session
     const cookieStore = await cookies()
     await cookieStore.delete('sonicflow_session')

@@ -1,11 +1,11 @@
 'use server'
 
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { Song } from '@/types'
 import { randomBytes } from 'crypto'
 
-export async function POST(request: NextRequest) {
+export async function POST() {
   try {
     const cookieStore = await cookies()
     const session = cookieStore.get('sonicflow_session')?.value
@@ -17,10 +17,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const sessionData = JSON.parse(session)
-
     // Generate seeded songs
-    const genres = ['Pop', 'Electronic', 'Rock', 'Hip-Hop', 'Indie', 'Jazz', 'Classical', 'R&B']
     const sampleSongs: Song[] = [
     {
       id: `seed_${randomBytes(8).toString('hex')}`,

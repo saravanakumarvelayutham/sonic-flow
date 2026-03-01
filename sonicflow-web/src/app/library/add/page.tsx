@@ -4,10 +4,21 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Upload, Apple, Music, PlayCircle, Heart, Sparkles } from 'lucide-react';
 
+interface ImportedSong {
+  id: string;
+  title: string;
+  artist: string;
+  album: string;
+  coverUrl: string;
+  style: string;
+  mood: string;
+  source: string;
+}
+
 export default function ImportPage() {
   const [importing, setImporting] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
-  const [imported, setImported] = useState<any[]>([]);
+  const [imported, setImported] = useState<ImportedSong[]>([]);
   const [activeTab, setActiveTab] = useState<'import' | 'ai'>('import');
 
   // Simulated import process
@@ -30,19 +41,19 @@ export default function ImportPage() {
     }, 3000);
   };
 
-  const generateMockSongs = (provider: string) => [
+  const generateMockSongs = (provider: string): ImportedSong[] => [
     {
-      id: `import-${Date.now()}`,
+      id: `import-${provider}-1`,
       title: `${provider} Top Hits`,
       artist: provider,
       album: `${provider} Favorites`,
       coverUrl: `/album-cover-${provider}.jpg`,
-      style: provider === 'Spotify' ? 'Pop' : provider === 'Apple' ? 'Electronic' : 'Chill',
+      style: provider === 'spotify' ? 'Pop' : provider === 'apple' ? 'Electronic' : 'Chill',
       mood: 'Mixed',
       source: provider,
     },
     {
-      id: `import-${Date.now()}-2`,
+      id: `import-${provider}-2`,
       title: 'Best of 2024',
       artist: 'Various Artists',
       album: `${provider} Charts`,
@@ -168,7 +179,7 @@ export default function ImportPage() {
                 <h2 className="text-xl font-bold mb-4 text-center">
                   Imported Songs
                 </h2>
-                {imported.map((song, index) => (
+                {imported.map((song) => (
                   <div
                     key={song.id}
                     className="flex items-center gap-4 p-3 mb-2 bg-white/5 rounded-lg hover:bg-white/10 transition-colors"

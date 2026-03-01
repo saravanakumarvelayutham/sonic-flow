@@ -1,6 +1,32 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 
+interface StoredSong {
+  id: string;
+  title: string;
+  artist: string;
+  album?: string;
+  coverUrl?: string;
+  source?: string;
+  songUrl?: string;
+  style?: string;
+  mood?: string;
+  addedAt?: string;
+}
+
+const parseSongs = (raw: string | undefined): StoredSong[] => {
+  if (!raw) return [];
+
+  try {
+    const parsed: unknown = JSON.parse(raw);
+    return Array.isArray(parsed) ? (parsed as StoredSong[]) : [];
+  } catch {
+    return [];
+  }
+};
+
+const getString = (value: unknown): string => (typeof value === 'string' ? value : '');
+
 // GET: List songs (with optional filtering)
 export async function GET(request: NextRequest) {
   try {
@@ -21,14 +47,14 @@ export async function GET(request: NextRequest) {
 
     // Get songs from localStorage
     const songsData = cookieStore.get('sonicflow-songs');
-    let songs = songsData?.value ? JSON.parse(songsData.value) : [];
+    let songs = parseSongs(songsData?.value);
 
     // Apply filters
     if (style) {
-      songs = songs.filter((song: any) => song.style === style);
+      songs = songs.filter((song) => song.style === style);
     }
     if (mood) {
-      songs = songs.filter((song: any) => song.mood === mood);
+      songs = songs.filter((song) => song.mood === mood);
     }
 
     return NextResponse.json({ songs });
@@ -44,8 +70,14 @@ export async function GET(request: NextRequest) {
 // POST: Create a song import task
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    const { title, artist, album, coverUrl, source, songUrl } = body;
+    const body: unknown = await request.json();
+    const payload = typeof body === 'object' && body !== null ? (body as Record<string, unknown>) : {};
+    const title = getString(payload.title);
+    const artist = getString(payload.artist);
+    const album = getString(payload.album);
+    const coverUrl = getString(payload.coverUrl);
+    const source = getString(payload.source);
+    const songUrl = getString(payload.songUrl);
 
     // Get session
     const cookieStore = await cookies();
@@ -60,11 +92,11 @@ export async function POST(request: NextRequest) {
 
     // Get current songs
     const songsData = cookieStore.get('sonicflow-songs');
-    const existingSongs = songsData?.value ? JSON.parse(songsData.value) : [];
+    const existingSongs = parseSongs(songsData?.value);
 
     // Check if already exists
     const exists = existingSongs.some(
-      (s: any) => s.title.toLowerCase() === title.toLowerCase() &&
+      (s) => s.title.toLowerCase() === title.toLowerCase() &&
                 s.artist.toLowerCase() === artist.toLowerCase()
     );
 

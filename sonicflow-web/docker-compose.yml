@@ -9,7 +9,7 @@ services:
       POSTGRES_PASSWORD: sonicflow_password
       POSTGRES_DB: sonicflow
     ports:
-      - "5433:5432"
+      - "${SONICFLOW_DB_HOST_PORT:-5433}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -28,14 +28,9 @@ services:
         condition: service_healthy
     environment:
       - DATABASE_URL=postgresql://sonicflow:sonicflow_password@postgres:5432/sonicflow
-      - NEXT_PUBLIC_APP_URL=http://localhost:3100
+      - NEXT_PUBLIC_APP_URL=http://localhost:${SONICFLOW_WEB_HOST_PORT:-3110}
     ports:
-      - "3100:3000"
-    volumes:
-      - ./:/app
-      - /app/node_modules
-      - /app/.next
-    command: npm run start
+      - "${SONICFLOW_WEB_HOST_PORT:-3110}:3000"
 
 volumes:
   postgres_data:

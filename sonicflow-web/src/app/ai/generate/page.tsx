@@ -2,11 +2,22 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Sparkles, Music, Sliders, Clock, Heart, Moon, Sun, Loader2 } from 'lucide-react';
+import { Sparkles, Music, Sliders, Clock, Heart, Loader2 } from 'lucide-react';
+
+interface GeneratedSong {
+  id: string;
+  title: string;
+  artist: string;
+  album: string;
+  coverUrl: string;
+  style: string;
+  mood: string;
+  source: string;
+}
 
 export default function AIGeneratePage() {
   const [generating, setGenerating] = useState(false);
-  const [generated, setGenerated] = useState<any[]>([]);
+  const [generated, setGenerated] = useState<GeneratedSong[]>([]);
   const [activeTab, setActiveTab] = useState<'generate' | 'library'>('generate');
 
   const [prompt, setPrompt] = useState('');
@@ -32,7 +43,7 @@ export default function AIGeneratePage() {
     setGenerating(false);
   };
 
-  const generateMockPlaylist = (): any[] => [
+  const generateMockPlaylist = (): GeneratedSong[] => [
     {
       id: `gen-${Date.now()}`,
       title: `${prompt || 'AI Generated'} - ${mood} Collection`,
@@ -252,7 +263,7 @@ export default function AIGeneratePage() {
                   <h2 className="text-xl font-bold mb-4 text-center">
                     Your AI Generated Playlist
                   </h2>
-                  {generated.map((song, index) => (
+                  {generated.map((song) => (
                     <div
                       key={song.id}
                       className="flex items-center gap-4 p-3 mb-3 bg-white/5 rounded-lg"

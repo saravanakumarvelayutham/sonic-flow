@@ -85,6 +85,7 @@ export function createUserFriendlyError(
     provider,
     code: rawError.name,
     message: rawError.message,
+    additionalContext,
     timestamp: new Date().toISOString(),
   })
 
@@ -95,7 +96,10 @@ export function createUserFriendlyError(
     type: errorType,
     provider,
     message: displayMessage,
-    details: normalizedDetails,
+    details: {
+      ...((typeof normalizedDetails === 'object' && normalizedDetails !== null) ? normalizedDetails as Record<string, unknown> : { normalizedDetails }),
+      additionalContext,
+    },
     timestamp: new Date().toISOString(),
   }
 }
@@ -143,7 +147,7 @@ export function useAuthError(): {
   retryAuth: () => void
 } {
   const [error, setError] = useState<AuthUserError | null>(null)
-  const [retryCount, setRetryCount] = useState(0)
+  const [, setRetryCount] = useState(0)
 
   const formatError = useCallback((err: AuthUserError): string => {
     const providerName = err.provider.charAt(0).toUpperCase() + err.provider.slice(1)

@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 
 // GET - Retrieve user preferences
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const cookieStore = await cookies()
     const session = cookieStore.get('sonicflow_session')?.value
@@ -47,7 +47,7 @@ export async function PUT(request: NextRequest) {
     }
 
     // Parse existing session
-    let session = JSON.parse(sessionData)
+    const session = JSON.parse(sessionData)
 
     // Update preferences
     session.preferences = {
@@ -91,7 +91,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    let session = JSON.parse(sessionData)
+    const session = JSON.parse(sessionData)
 
     // Update welcome step
     session.welcomeStep = step

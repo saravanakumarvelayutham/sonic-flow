@@ -1,29 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo } from 'react';
 import Link from 'next/link';
 import { Music, Sparkles, Palette, Clock, Play } from 'lucide-react';
 
 export default function Home() {
-  const [audioContext] = useState(() => {
-    if (typeof window !== 'undefined' && 'AudioContext' in window) {
-      return new (window as any).AudioContext();
-    }
-    return null;
-  });
-
   const getSongCount = () => {
     if (typeof window === 'undefined') return 0;
     const saved = localStorage.getItem('sonicflow-songs');
     return saved ? JSON.parse(saved).length : 0;
-  };
-
-  const handlePlayback = () => {
-    if (audioContext) {
-      audioContext.resume();
-    } else {
-      alert('Audio playback needs HTTPS or localhost');
-    }
   };
 
   return (
@@ -146,17 +131,29 @@ export default function Home() {
 
 // Background particle animation for visual appeal
 function ParticleAnimation() {
+  const particles = useMemo(
+    () =>
+      Array.from({ length: 20 }, (_, index) => ({
+        id: index,
+        left: (index * 17) % 100,
+        top: (index * 29) % 100,
+        duration: 10 + (index % 7) * 3,
+        delay: (index % 5) * 0.6,
+      })),
+    []
+  );
+
   return (
     <div className="absolute inset-0">
-      {[...Array(20)].map((_, i) => (
+      {particles.map((particle) => (
         <div
-          key={i}
+          key={particle.id}
           className="absolute w-4 h-4 bg-pink-500 rounded-full opacity-50"
           style={{
-            left: `${Math.random() * 100}%`,
-            top: `${Math.random() * 100}%`,
-            animation: `float ${10 + Math.random() * 20}s infinite ease-in-out`,
-            animationDelay: `${Math.random() * 5}s`,
+            left: `${particle.left}%`,
+            top: `${particle.top}%`,
+            animation: `float ${particle.duration}s infinite ease-in-out`,
+            animationDelay: `${particle.delay}s`,
           }}
         />
       ))}

@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import Image from 'next/image'
 import { Play, Heart } from 'lucide-react'
 
 interface Song {
@@ -25,7 +26,14 @@ export function SongCard({ song, onPlay, onLike, isLiked = false }: SongCardProp
       {/* Album artwork placeholder */}
       <div className="relative mb-4 aspect-square w-full overflow-hidden rounded-md bg-gradient-to-br from-gray-200 to-gray-300">
         {song.imageUrl ? (
-          <img src={song.imageUrl} alt={song.title} className="h-full w-full object-cover" />
+          <Image
+            src={song.imageUrl}
+            alt={song.title}
+            fill
+            sizes="(max-width: 768px) 50vw, 20vw"
+            className="h-full w-full object-cover"
+            unoptimized
+          />
         ) : (
           <div className="flex h-full items-center justify-center">
             <svg

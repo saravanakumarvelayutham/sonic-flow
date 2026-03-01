@@ -1,9 +1,32 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 
+interface StoredSong {
+  id: string;
+  [key: string]: unknown;
+}
+
+const parseSongs = (raw: string | undefined): StoredSong[] => {
+  if (!raw) return [];
+
+  try {
+    const parsed: unknown = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter(
+      (item): item is StoredSong =>
+        typeof item === 'object' &&
+        item !== null &&
+        'id' in item &&
+        typeof (item as { id?: unknown }).id === 'string'
+    );
+  } catch {
+    return [];
+  }
+};
+
 // GET: Get a specific song
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
@@ -23,9 +46,9 @@ export async function GET(
 
     // Get songs
     const songsData = cookieStore.get('sonicflow-songs');
-    const songs = songsData?.value ? JSON.parse(songsData.value) : [];
+    const songs = parseSongs(songsData?.value);
 
-    const song = songs.find((s: any) => s.id === songId);
+    const song = songs.find((s) => s.id === songId);
 
     if (!song) {
       return NextResponse.json(
@@ -46,7 +69,7 @@ export async function GET(
 
 // DELETE: Delete a song
 export async function DELETE(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
@@ -66,9 +89,9 @@ export async function DELETE(
 
     // Get songs
     const songsData = cookieStore.get('sonicflow-songs');
-    let songs = songsData?.value ? JSON.parse(songsData.value) : [];
+    const songs = parseSongs(songsData?.value);
 
-    const filteredSongs = songs.filter((s: any) => s.id !== songId);
+    const filteredSongs = songs.filter((s) => s.id !== songId);
 
     if (filteredSongs.length === songs.length) {
       return NextResponse.json(

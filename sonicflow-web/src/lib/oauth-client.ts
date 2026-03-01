@@ -195,9 +195,6 @@ export const createAuthState = async (provider: string, nonce: string): Promise<
     timestamp: Date.now(),
   })
 
-  // Rotate state after 5 minutes
-  const expiresAt = Date.now() + 5 * 60 * 1000
-
   const cookieStore = await cookies()
   cookieStore.set('apple_auth_state', state, {
     httpOnly: true,
@@ -250,7 +247,7 @@ export const validateAuthState = async (
     }
 
     return { valid: true, provider: stateData.provider }
-  } catch (error) {
+  } catch {
     await clearAuthCookies()
     return { valid: false }
   }
@@ -271,7 +268,7 @@ export const logAuthEvent = async (event: 'login' | 'logout' | 'refresh' | 'erro
   const userAgent = headersList.get('user-agent') ?? 'unknown'
   const timestamp = new Date().toISOString()
 
-  console.log(`[${timestamp}] [AUTH] [${event}] -`, data)
+  console.log(`[${timestamp}] [AUTH] [${event}] -`, { ...data, userAgent })
 }
 
 // Background task utilities
@@ -292,7 +289,7 @@ export const getAuthHeaders = async (): Promise<Record<string, string>> => {
 }
 
 // Export all functions
-export default {
+const oauthClient = {
   getOAuthConfig,
   createSession,
   getSession,
@@ -306,3 +303,5 @@ export default {
   authBackgroundTask,
   getAuthHeaders,
 }
+
+export default oauthClient

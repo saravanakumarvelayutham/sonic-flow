@@ -5,8 +5,13 @@ import { useSession } from '@/lib/hooks/useSession'
 
 export function ProviderSelection() {
   const { setPreferences, preferences } = useSession()
-  const [selectedProvider, setSelectedProvider] = useState<string[]>(preferences.connectedAccounts || {} as any)
+  const [selectedProvider, setSelectedProvider] = useState<string[]>(
+    Object.entries(preferences.connectedAccounts || {})
+      .filter(([, isConnected]) => isConnected)
+      .map(([providerId]) => providerId)
+  )
   const [isSyncing, setIsSyncing] = useState(false)
+  const [syncingProvider, setSyncingProvider] = useState<string | null>(null)
 
   const providers = [
     {
@@ -48,6 +53,7 @@ export function ProviderSelection() {
     }
 
     setIsSyncing(true)
+    setSyncingProvider(providerId)
 
     // Simulate authentication process
     try {
@@ -71,6 +77,7 @@ export function ProviderSelection() {
       console.error('Failed to connect provider:', error)
     } finally {
       setIsSyncing(false)
+      setSyncingProvider(null)
     }
   }
 
@@ -88,7 +95,7 @@ export function ProviderSelection() {
       <div className="text-center mb-8">
         <h2 className="text-3xl font-bold mb-4">Connect Your Music Services</h2>
         <p className="text-gray-400">
-          Choose the music services you use. We'll connect them and start curating recommendations just for you.
+          Choose the music services you use. We&apos;ll connect them and start curating recommendations just for you.
         </p>
       </div>
 
@@ -96,7 +103,7 @@ export function ProviderSelection() {
       <div className="space-y-3 mb-8">
         {providers.map((provider) => {
           const isSelected = selectedProvider.includes(provider.id)
-          const isSyncingProvider = provider.id === provider.id && isSyncing
+          const isSyncingProvider = syncingProvider === provider.id && isSyncing
 
           return (
             <button
@@ -146,7 +153,7 @@ export function ProviderSelection() {
           <div className="flex items-center">
             <span className="text-2xl mr-2">✓</span>
             <span className="text-green-700">
-              You're connected to {selectedProvider.length} music service(s). We're syncing your library now.
+              You&apos;re connected to {selectedProvider.length} music service(s). We&apos;re syncing your library now.
             </span>
           </div>
         </div>

@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { style, mood, duration, count } = body;
+    const { style, mood, count } = body;
 
     // Get session
     const cookieStore = await cookies();
@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const playlist = await generatePlaylist(style, mood, duration || '30', count || 10);
+    const playlist = await generatePlaylist(style, mood, count || 10);
 
     return NextResponse.json(
       { playlist: playlist },
@@ -105,7 +105,7 @@ async function generateRecommendations(style?: string, mood?: string, limit: num
   return recommendations.slice(0, limit);
 }
 
-async function generatePlaylist(style?: string, mood?: string, duration: string = '30', count: number = 10) {
+async function generatePlaylist(style?: string, mood?: string, count: number = 10) {
   // This is a placeholder for real AI playlist generation
   // In a production app, this would call an OpenAI API with user preferences
 

@@ -1,8 +1,48 @@
 'use server'
 
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
-import { SpotifySong, YouTubeSong, AmazonSong } from '@/types'
+import { AppleMusicSong, YouTubeSong, AmazonSong } from '@/types'
+
+interface AppleSongItem {
+  id: string
+  attributes: {
+    name?: string
+    artistName?: string
+    albumName?: string
+    artwork?: { url?: string }
+    durationInMillis?: number
+    previewUrl?: string
+    releaseDate?: string
+    genreNames?: string[]
+  }
+}
+
+interface YouTubePlaylistItem {
+  id?: string
+}
+
+interface YouTubePlaylistSongItem {
+  snippet?: {
+    title?: string
+    description?: string
+    position?: number
+    resourceId?: {
+      videoId?: string
+    }
+  }
+}
+
+interface AmazonTrackItem {
+  id?: string
+  trackTitle?: string
+  artistName?: string
+  albumName?: string
+  coverArt?: string
+  trackPublishingDateTime?: string
+  previewUrl?: string
+  genreName?: string
+}
 
 async function fetchAppleMusicLibrary(accessToken: string) {
   // Apple Music API integration
@@ -12,18 +52,18 @@ async function fetchAppleMusicLibrary(accessToken: string) {
     },
   })
 
-  const data = await response.json()
+  const data = (await response.json()) as { data?: AppleSongItem[] }
 
-  return (data.data || []).map((song: any) => ({
+  return (data.data || []).map((song) => ({
     id: `apple_${song.id}`,
-    title: song.attributes.name,
-    artist: song.attributes.artistName,
+    title: song.attributes.name || 'Unknown',
+    artist: song.attributes.artistName || 'Unknown',
     album: song.attributes.albumName || 'Unknown',
     cover: song.attributes.artwork?.url || '',
-    duration: song.attributes.durationInMillis / 1000,
+    duration: (song.attributes.durationInMillis || 0) / 1000,
     previewUrl: song.attributes.previewUrl || '',
     source: 'apple' as const,
-    releaseDate: song.attributes.releaseDate,
+    releaseDate: song.attributes.releaseDate || '',
     genre: song.attributes.genreNames?.[0] || 'Unknown',
   }))
 }
@@ -36,10 +76,14 @@ async function fetchYouTubeLibrary(accessToken: string) {
     },
   })
 
-  const data = await response.json()
+  const data = (await response.json()) as { items?: YouTubePlaylistItem[] }
 
   const songs: YouTubeSong[] = []
   for (const item of data.items || []) {
+    if (!item.id) {
+      continue
+    }
+
     const songsResponse = await fetch(
       `https://www.googleapis.com/youtube/v3/playlistItems?playlistId=${item.id}&part=snippet&maxResults=100`,
       {
@@ -49,19 +93,23 @@ async function fetchYouTubeLibrary(accessToken: string) {
       }
     )
 
-    const songsData = await songsResponse.json()
-    songsData.items?.forEach((playlistItem: any) => {
-      const video = playlistItem.snippet.resourceId.videoId
+    const songsData = (await songsResponse.json()) as { items?: YouTubePlaylistSongItem[] }
+    songsData.items?.forEach((playlistItem) => {
+      const video = playlistItem.snippet?.resourceId?.videoId
+      if (!video) {
+        return
+      }
+
       songs.push({
         id: `youtube_${video}`,
-        title: playlistItem.snippet.title,
-        artist: playlistItem.snippet.description?.split(' artist: ')[1] || 'Unknown',
+        title: playlistItem.snippet?.title || 'Unknown',
+        artist: playlistItem.snippet?.description?.split(' artist: ')[1] || 'Unknown',
         album: 'YouTube',
         cover: `https://img.youtube.com/vi/${video}/hqdefault.jpg`,
         duration: 0, // YouTube doesn't return duration in playlist endpoints easily
         previewUrl: `https://www.youtube.com/watch?v=${video}`,
         source: 'youtube' as const,
-        playCount: playlistItem.snippet.position + 1,
+        playCount: (playlistItem.snippet?.position || 0) + 1,
       })
     })
   }
@@ -77,23 +125,23 @@ async function fetchAmazonMusicLibrary(accessToken: string) {
     },
   })
 
-  const data = await response.json()
+  const data = (await response.json()) as { items?: AmazonTrackItem[] }
 
-  return (data.items || []).map((song: any) => ({
+  return (data.items || []).map((song) => ({
     id: `amazon_${song.id}`,
-    title: song.trackTitle,
-    artist: song.artistName,
-    album: song.albumName,
+    title: song.trackTitle || 'Unknown',
+    artist: song.artistName || 'Unknown',
+    album: song.albumName || 'Unknown',
     cover: song.coverArt || '',
-    duration: song.trackPublishingDateTime,
+    duration: 0,
     previewUrl: song.previewUrl || '',
     source: 'amazon' as const,
-    releaseDate: song.trackPublishingDateTime,
+    releaseDate: song.trackPublishingDateTime || '',
     genre: song.genreName || 'Unknown',
   }))
 }
 
-export async function POST(request: NextRequest) {
+export async function POST() {
   try {
     const cookieStore = await cookies()
     const session = cookieStore.get('sonicflow_session')?.value
@@ -106,7 +154,7 @@ export async function POST(request: NextRequest) {
     }
 
     const sessionData = JSON.parse(session)
-    const songs: Array<SpotifySong | YouTubeSong | AmazonSong> = []
+    const songs: Array<AppleMusicSong | YouTubeSong | AmazonSong> = []
 
     // Fetch from all connected providers
     if (sessionData.user?.provider === 'apple') {

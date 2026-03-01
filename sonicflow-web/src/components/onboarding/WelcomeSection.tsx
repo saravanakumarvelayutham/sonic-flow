@@ -1,11 +1,9 @@
 'use client'
 
-import { useState, useEffect } from 'react'
 import { useSession } from '@/lib/hooks/useSession'
 
 export function WelcomeSection() {
   const { activeStep, setActiveStep, preferences, setPreferences } = useSession()
-  const [isAnimating, setIsAnimating] = useState(false)
 
   const welcomeSteps = [
     {
@@ -56,13 +54,6 @@ export function WelcomeSection() {
 
   const currentStep = welcomeSteps[activeStep - 1]
 
-  useEffect(() => {
-    if (activeStep > 0) {
-      setIsAnimating(true)
-      setTimeout(() => setIsAnimating(false), 500)
-    }
-  }, [activeStep])
-
   const handleNext = () => {
     setActiveStep((prev) => prev + 1)
 
@@ -81,7 +72,7 @@ export function WelcomeSection() {
 
   return (
     <div className="w-full max-w-lg">
-      <div className={`transition-all duration-500 ease-in-out ${isAnimating ? 'scale-95 opacity-0' : 'scale-100 opacity-100'}`}>
+      <div className="transition-all duration-500 ease-in-out scale-100 opacity-100">
         {/* Step header */}
         <div className="flex items-center justify-center mb-8">
           <span className="text-6xl mb-4">{currentStep.emoji}</span>
