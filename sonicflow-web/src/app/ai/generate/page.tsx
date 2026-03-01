@@ -83,7 +83,10 @@ export default function AIGeneratePage() {
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-violet-900 via-purple-900 to-indigo-900 text-white">
+    <main className="relative min-h-screen overflow-hidden bg-gradient-to-br from-violet-900 via-purple-900 to-indigo-900 text-white">
+      <div className="low-bandwidth-hide pointer-events-none absolute left-[-120px] top-[-80px] h-72 w-72 rounded-full bg-purple-400/20 blur-3xl" style={{ animation: 'float 14s ease-in-out infinite' }} />
+      <div className="low-bandwidth-hide pointer-events-none absolute right-[-120px] bottom-[-80px] h-72 w-72 rounded-full bg-pink-400/20 blur-3xl" style={{ animation: 'float 17s ease-in-out infinite', animationDelay: '0.8s' }} />
+
       <Link
         href="/library"
         className="block px-6 py-4 hover:bg-black/20 -mx-6 transition-colors"
@@ -140,7 +143,7 @@ export default function AIGeneratePage() {
                 placeholder="e.g., Morning focus, rainy days, high energy workout..."
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
-                className="w-full bg-white/10 rounded-lg p-3 placeholder-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full bg-white/10 rounded-lg p-3 placeholder-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all duration-300 focus:bg-white/15"
                 rows={3}
               />
             </div>
@@ -148,7 +151,7 @@ export default function AIGeneratePage() {
             {/* Settings */}
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
               {/* Mood */}
-              <div className="bg-black/50 backdrop-blur-lg rounded-2xl p-5 border border-white/10">
+              <div className="bg-black/50 backdrop-blur-lg rounded-2xl p-5 border border-white/10 transition-all duration-300 hover:-translate-y-1 hover:border-white/25">
                 <label className="block text-sm font-semibold mb-3 text-purple-300">
                   <Sliders className="w-4 h-4 inline mr-1" />
                   Mood
@@ -167,7 +170,7 @@ export default function AIGeneratePage() {
               </div>
 
               {/* Style */}
-              <div className="bg-black/50 backdrop-blur-lg rounded-2xl p-5 border border-white/10">
+              <div className="bg-black/50 backdrop-blur-lg rounded-2xl p-5 border border-white/10 transition-all duration-300 hover:-translate-y-1 hover:border-white/25">
                 <label className="block text-sm font-semibold mb-3 text-purple-300">
                   <Sliders className="w-4 h-4 inline mr-1" />
                   Style
@@ -186,7 +189,7 @@ export default function AIGeneratePage() {
               </div>
 
               {/* Energy */}
-              <div className="bg-black/50 backdrop-blur-lg rounded-2xl p-5 border border-white/10">
+              <div className="bg-black/50 backdrop-blur-lg rounded-2xl p-5 border border-white/10 transition-all duration-300 hover:-translate-y-1 hover:border-white/25">
                 <label className="block text-sm font-semibold mb-3 text-purple-300">
                   <Sliders className="w-4 h-4 inline mr-1" />
                   Energy Level
@@ -203,7 +206,7 @@ export default function AIGeneratePage() {
               </div>
 
               {/* Duration */}
-              <div className="bg-black/50 backdrop-blur-lg rounded-2xl p-5 border border-white/10">
+              <div className="bg-black/50 backdrop-blur-lg rounded-2xl p-5 border border-white/10 transition-all duration-300 hover:-translate-y-1 hover:border-white/25">
                 <label className="block text-sm font-semibold mb-3 text-purple-300">
                   <Clock className="w-4 h-4 inline mr-1" />
                   Duration
@@ -222,7 +225,7 @@ export default function AIGeneratePage() {
               </div>
 
               {/* Favorite Artists */}
-              <div className="bg-black/50 backdrop-blur-lg rounded-2xl p-5 border border-white/10 md:col-span-2">
+              <div className="bg-black/50 backdrop-blur-lg rounded-2xl p-5 border border-white/10 md:col-span-2 transition-all duration-300 hover:-translate-y-1 hover:border-white/25">
                 <label className="block text-sm font-semibold mb-2 text-purple-300">
                   <Heart className="w-4 h-4 inline mr-1" />
                   Favorite Artists (optional)
@@ -241,7 +244,7 @@ export default function AIGeneratePage() {
             <button
               onClick={handleGenerate}
               disabled={generating}
-              className="w-full bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-400 hover:to-indigo-400 py-4 rounded-xl font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="sonic-gradient-shift w-full bg-gradient-to-r from-purple-500 to-indigo-500 py-4 rounded-xl font-semibold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 hover:scale-[1.01] hover:shadow-lg hover:shadow-purple-500/30"
             >
               {generating ? (
                 <>
@@ -266,7 +269,7 @@ export default function AIGeneratePage() {
                   {generated.map((song) => (
                     <div
                       key={song.id}
-                      className="flex items-center gap-4 p-3 mb-3 bg-white/5 rounded-lg"
+                      className="flex items-center gap-4 p-3 mb-3 bg-white/5 rounded-lg transition-all duration-300 hover:bg-white/10 hover:-translate-y-0.5"
                     >
                       <div className="w-12 h-12 rounded-lg overflow-hidden bg-violet-900 flex items-center justify-center">
                         <Music className="w-full h-full text-purple-300" />

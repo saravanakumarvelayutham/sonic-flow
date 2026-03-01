@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { Search, Filter, Plus, X, Music, Sparkles } from 'lucide-react';
-import { SongCard } from '@/components/library';
+import { AudioWaveform, SongCard } from '@/components/library';
 
 interface LibrarySong {
   id: string;
@@ -117,23 +117,32 @@ export default function LibraryPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-violet-900 via-purple-900 to-indigo-900 text-white">
+    <main className="relative min-h-screen overflow-hidden bg-gradient-to-br from-violet-900 via-purple-900 to-indigo-900 text-white">
+      <div className="low-bandwidth-hide pointer-events-none absolute left-[-120px] top-[-80px] h-72 w-72 rounded-full bg-fuchsia-500/20 blur-3xl" style={{ animation: 'float 13s ease-in-out infinite' }} />
+      <div className="low-bandwidth-hide pointer-events-none absolute right-[-100px] bottom-[-60px] h-72 w-72 rounded-full bg-indigo-400/20 blur-3xl" style={{ animation: 'float 15s ease-in-out infinite', animationDelay: '1s' }} />
+
       {/* Header */}
       <header className="sticky top-0 z-10 bg-black/30 backdrop-blur-lg border-b border-white/10">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between gap-4">
-            <h1 className="text-2xl font-bold">Your Library</h1>
+            <div className="flex items-center gap-3">
+              <h1 className="text-2xl font-bold">Your Library</h1>
+              <div className="hidden sm:flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1">
+                <AudioWaveform isPlaying variant="compact" />
+                <span className="text-xs text-purple-100">Live Mood</span>
+              </div>
+            </div>
             <div className="flex items-center gap-2">
               <Link
                 href="/library/add"
-                className="flex items-center gap-2 bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-400 hover:to-purple-400 px-4 py-2 rounded-lg font-semibold transition-all"
+                className="sonic-gradient-shift flex items-center gap-2 bg-gradient-to-r from-pink-500 to-purple-500 px-4 py-2 rounded-lg font-semibold transition-all duration-300 hover:scale-105"
               >
                 <Plus className="w-4 h-4" />
                 Add Songs
               </Link>
               <a
                 href="/ai/generate"
-                className="flex items-center gap-2 hover:bg-white/10 px-4 py-2 rounded-lg transition-all"
+                className="flex items-center gap-2 hover:bg-white/10 px-4 py-2 rounded-lg transition-all duration-300 hover:-translate-y-0.5"
               >
                 <Sparkles className="w-4 h-4" />
                 AI Generate
@@ -156,7 +165,7 @@ export default function LibraryPage() {
               </div>
               <button
                 onClick={() => setIsFilterOpen(!isFilterOpen)}
-                className="flex items-center gap-2 hover:bg-white/10 px-4 py-2 rounded-lg transition-all"
+                className="flex items-center gap-2 hover:bg-white/10 px-4 py-2 rounded-lg transition-all duration-300 hover:scale-105"
               >
                 <Filter className="w-5 h-5" />
               </button>
@@ -201,8 +210,8 @@ export default function LibraryPage() {
                       onClick={() => setFilterStyle(s)}
                       className={`px-3 py-1 rounded-full text-sm transition-all ${
                         filterStyle === s
-                          ? 'bg-purple-500'
-                          : 'bg-white/10 hover:bg-white/20'
+                          ? 'bg-purple-500 shadow-lg shadow-purple-600/40'
+                          : 'bg-white/10 hover:bg-white/20 hover:-translate-y-0.5'
                       }`}
                     >
                       {s}
@@ -219,8 +228,8 @@ export default function LibraryPage() {
                       onClick={() => setFilterMood(m)}
                       className={`px-3 py-1 rounded-full text-sm transition-all ${
                         filterMood === m
-                          ? 'bg-purple-500'
-                          : 'bg-white/10 hover:bg-white/20'
+                          ? 'bg-purple-500 shadow-lg shadow-purple-600/40'
+                          : 'bg-white/10 hover:bg-white/20 hover:-translate-y-0.5'
                       }`}
                     >
                       {m}

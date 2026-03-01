@@ -24,3 +24,129 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
+}
+
+@keyframes sonicPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(236, 72, 153, 0.35);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(236, 72, 153, 0);
+  }
+}
+
+@keyframes sonicGradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes sonicEqualizer {
+  0%, 100% {
+    transform: scaleY(0.45);
+    opacity: 0.55;
+  }
+  50% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+}
+
+@keyframes cursorDistort {
+  0%, 100% {
+    filter: blur(60px) brightness(1.2) saturate(1);
+  }
+  50% {
+    filter: blur(80px) brightness(1.4) saturate(1.3);
+  }
+}
+
+@keyframes reactiveBlast {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(2.5);
+  }
+}
+
+.sonic-gradient-shift {
+  background-size: 220% 220%;
+  animation: sonicGradientShift 8s ease-in-out infinite;
+}
+
+.sonic-pulse {
+  animation: sonicPulse 2.4s ease-in-out infinite;
+}
+
+.sonic-eq-bar {
+  animation: sonicEqualizer 0.9s ease-in-out infinite;
+  transform-origin: bottom;
+}
+
+.cursor-reactive-background {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.cursor-reactive-blob {
+  position: absolute;
+  border-radius: 50%;
+  mix-blend-mode: screen;
+  filter: blur(60px);
+}
+
+.reactive-blast {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: reactiveBlast 0.8s ease-out forwards;
+}
+
+html[data-low-bandwidth='true'] .low-bandwidth-hide {
+  display: none !important;
+}
+
+html[data-low-bandwidth='true'] .sonic-gradient-shift,
+html[data-low-bandwidth='true'] .sonic-pulse,
+html[data-low-bandwidth='true'] .sonic-eq-bar,
+html[data-low-bandwidth='true'] .reactive-blast {
+  animation: none !important;
+}
+
+html[data-low-bandwidth='true'] .backdrop-blur-sm,
+html[data-low-bandwidth='true'] .backdrop-blur-lg {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .low-bandwidth-hide {
+    display: none !important;
+  }
+
+  .sonic-gradient-shift,
+  .sonic-pulse,
+  .sonic-eq-bar,
+  .reactive-blast {
+    animation: none !important;
+  }
+}
