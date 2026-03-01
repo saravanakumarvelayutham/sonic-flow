@@ -1,109 +1,82 @@
-# SonicFlow Project Status Report
+# SonicFlow Project Status (March 1, 2026)
 
-## Project Overview
-✅ SonicFlow - AI Music Library Platform (Next.js 16 + TypeScript + Tailwind CSS)
+## Current Snapshot
+SonicFlow is now in a **working MVP state** with clean code quality checks and running Docker services.
 
-## Completed Components
+- ✅ `npm run lint` passes with no warnings/errors
+- ✅ `npm run build` passes
+- ✅ Docker stack runs successfully (`sonicflow-web` + `postgres`)
+- ✅ Host port mapping is conflict-safe by default:
+	- Web: `3110 -> 3000`
+	- Postgres: `5433 -> 5432`
+- ✅ Provider UI now uses **Amazon Music, Apple Music, YouTube Music** (Spotify removed from user-facing flows)
 
-### 1. Core Application Structure
-- ✅ Root layout with metadata and styling
-- ✅ Global styles and Tailwind CSS configuration
-- ✅ Project configuration (tsconfig.json, next.config.ts, .gitignore)
+## Completed Work
 
-### 2. Type Definitions
-✅ `/src/types/index.ts`
-- `Song` - Song metadata structure
-- `UserPreference` - AI preference definition
-- `GeneratedPlaylist` - Playlist management
-- `AuthProvider` - Auth provider support
-- `AudioFeatures` - Audio analysis capabilities
-- `VizConfig` - Visualization settings
-- `ApiResponse` - API response structure
-- `DailyMix` - Daily mix generation
+### Platform and Quality
+- Next.js 16 + React 19 + TypeScript + Tailwind CSS configured and building
+- Lint/type issues cleaned up across app routes, API routes, and components
+- React purity/effect issues fixed (no impure calls during render)
 
-### 3. Auth Flow
-✅ `/src/app/auth/choose/page.tsx`
-- Provider selection interface (Apple, YouTube, Amazon Music)
-- Loading states for OAuth simulation
-- Integration routes for actual OAuth flows
+### Core Product Areas
+- Landing page and navigation complete
+- Auth selection and onboarding flows implemented
+- Library pages (`/library`, `/library/add`) implemented
+- AI playlist generation UI page implemented (`/ai/generate`)
 
-### 4. Main Interface
-✅ `/src/app/page.tsx`
-- Landing page with hero section
-- Animated particle background
-- Key value stats display
-- Feature grid with interactive cards
-- Navigation to auth/Library routes
+### API Surface Implemented
+- Auth routes for Apple, YouTube, Amazon callback/logout/refresh flows
+- Song routes:
+	- `/api/songs`
+	- `/api/songs/[id]`
+	- `/api/songs/seed`
+	- `/api/songs/sync`
+	- `/api/songs/recommend`
+- User preferences route:
+	- `/api/user/preferences`
 
-## Architecture
+### DevOps / Runtime
+- Docker compose updated to avoid host-port conflicts
+- Production container runtime fixed (removed bind-mount conflict that caused `next: not found`)
+- Services verified reachable on `http://localhost:3110`
 
-### Project Structure
-```
-sonicflow-web/
-├── src/
-│   ├── app/
-│   │   ├── api/ (ready for implementation)
-│   │   ├── auth/
-│   │   │   └── choose/page.tsx ✅
-│   │   ├── layout.tsx ✅
-│   │   ├── page.tsx ✅
-│   │   └── globals.css ✅
-│   ├── types/
-│   │   └── index.ts ✅
-│   ├── components/ (ready for implementation)
-│   ├── lib/ (ready for implementation)
-│   ├── hooks/ (ready for implementation)
-│   └── public/
-```
+## What’s Remaining
 
-## Technology Stack
-- ✅ Next.js 16.1.6 (React 19)
-- ✅ TypeScript 5
-- ✅ Tailwind CSS 4
-- ✅ Lucide React icons (planned)
-- ✅ ESLint and type safety
+### 1) Real Provider Integrations (High Priority)
+- Replace simulated/provider-placeholder behavior with fully validated OAuth flows end-to-end
+- Confirm provider-specific token exchange/refresh behavior against real credentials
+- Add robust handling for provider API rate limits, token failures, and partial sync failures
 
-## Next Steps (Priority Order)
+### 2) Persistent Data Layer (High Priority)
+- Move song library and preference storage from cookie/in-memory patterns to PostgreSQL
+- Add migrations/schema for users, sessions, providers, songs, playlists, preferences
+- Add repository/service layer for DB access
 
-### Phase 1: Authentication Implementation
-1. Create `/src/app/api/auth/apple/route.ts`
-2. Create `/src/app/api/auth/youtube/route.ts`
-3. Create `/src/app/api/auth/amazon/route.ts`
-4. Implement token exchange and user sync
+### 3) Production-Grade Auth & Session Security (High Priority)
+- Tighten cookie/session strategy (secure, expiration, rotation, invalidation)
+- Remove any remaining dev-oriented fallback logic
+- Add server-side validation around user/session ownership for all routes
 
-### Phase 2: Core APIs
-1. Create `/src/app/api/songs/route.ts` - Song retrieval and management
-2. Create `/src/app/api/preferences/route.ts` - User preferences
-3. Add API client utilities
+### 4) AI Backend Integration (Medium Priority)
+- Replace mock recommendation/playlist generation with real model-backed API integration
+- Persist generated playlists and generation metadata
+- Add guardrails and request validation for prompt inputs
 
-### Phase 3: UI Components
-1. Music card components
-2. Player interface
-3. Library view
-4. Visualizer components
+### 5) Testing & CI (Medium Priority)
+- Add automated test coverage (unit + route integration + smoke)
+- Add CI pipeline for lint, typecheck, build, and tests on every PR
 
-### Phase 4: AI Integration
-1. Preference engine
-2. Playlist generation API
-3. Audio feature analysis integration
+### 6) Documentation Refresh (Medium Priority)
+- Update `README.md` with current runtime ports (`3110`, `5433`), Docker workflow, and env vars
+- Document required provider env vars and local setup steps
+- Align `ROADMAP.md` with implemented features
 
-## Development Status
-- Foundation: ✅ **100%**
-- Auth Flow: ✅ **100%**
-- Public Interface: ✅ **100%**
-- Core APIs: ⏳ **0%** (ready for implementation)
-- Components: ⏳ **0%** (ready for implementation)
-- AI Integration: ⏳ **0%** (ready for implementation)
+## Recommended Next Milestone
+**Milestone: “Production-ready data + auth backend”**
 
-## Ready for Development
-All core files are in place. The project is ready for implementing the additional APIs, components, and AI features.
+Scope:
+1. PostgreSQL-backed persistence for songs/sessions/preferences
+2. Hardened OAuth session management
+3. Real provider sync validation for Amazon/Apple/YouTube
 
-```
-Current Progress: PHASE 1 COMPLETE
-```
-
-## Notes
-- The application uses client components for interactivity
-- Audio Context is initialized for playback
-- All routes use React Server Components where appropriate
-- Styling uses modern gradient backgrounds and glassmorphism effects
+Expected outcome: move from MVP demo behavior to a stable multi-user backend foundation.
