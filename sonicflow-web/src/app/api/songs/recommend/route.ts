@@ -78,7 +78,7 @@ async function generateRecommendations(style?: string, mood?: string, limit: num
       coverUrl: '/album-cover-1.jpg',
       style: 'Synthwave',
       mood: 'Energetic',
-      source: 'Spotify',
+      source: 'Amazon Music',
     },
     {
       id: 'rec-2',
@@ -88,7 +88,7 @@ async function generateRecommendations(style?: string, mood?: string, limit: num
       coverUrl: '/album-cover-2.jpg',
       style: 'Synthwave',
       mood: 'Chill',
-      source: 'Spotify',
+      source: 'Amazon Music',
     },
     {
       id: 'rec-3',

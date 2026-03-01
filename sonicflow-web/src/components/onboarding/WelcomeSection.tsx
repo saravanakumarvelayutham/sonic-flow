@@ -23,7 +23,7 @@ export function WelcomeSection() {
       description: 'Choose your preferred music service',
       emoji: '🎵',
       substeps: [
-        { id: 1, text: 'Spotify', emoji: '🔊' },
+        { id: 1, text: 'Amazon Music', emoji: '☁️' },
         { id: 2, text: 'Apple Music', emoji: '🍎' },
         { id: 3, text: 'YouTube Music', emoji: '▶️' },
       ],

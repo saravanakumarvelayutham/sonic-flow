@@ -15,13 +15,6 @@ export function ProviderSelection() {
 
   const providers = [
     {
-      id: 'spotify',
-      name: 'Spotify',
-      emoji: '🔊',
-      color: 'from-green-500 to-green-600',
-      description: 'Connect your Spotify library to start discovering',
-    },
-    {
       id: 'apple',
       name: 'Apple Music',
       emoji: '🍎',

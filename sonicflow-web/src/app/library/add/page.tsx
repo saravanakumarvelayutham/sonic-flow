@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Upload, Apple, Music, PlayCircle, Heart, Sparkles } from 'lucide-react';
+import { Upload, Apple, Cloud, PlayCircle, Heart, Sparkles, Music } from 'lucide-react';
 
 interface ImportedSong {
   id: string;
@@ -48,7 +48,7 @@ export default function ImportPage() {
       artist: provider,
       album: `${provider} Favorites`,
       coverUrl: `/album-cover-${provider}.jpg`,
-      style: provider === 'spotify' ? 'Pop' : provider === 'apple' ? 'Electronic' : 'Chill',
+      style: provider === 'amazon' ? 'Pop' : provider === 'apple' ? 'Electronic' : 'Chill',
       mood: 'Mixed',
       source: provider,
     },
@@ -66,10 +66,10 @@ export default function ImportPage() {
 
   const providers = [
     {
-      id: 'spotify',
-      name: 'Spotify',
-      icon: <Music className="w-8 h-8 text-green-500" />,
-      color: 'from-green-500 to-green-600',
+      id: 'amazon',
+      name: 'Amazon Music',
+      icon: <Cloud className="w-8 h-8 text-yellow-300" />,
+      color: 'from-yellow-500 to-orange-500',
     },
     {
       id: 'apple',

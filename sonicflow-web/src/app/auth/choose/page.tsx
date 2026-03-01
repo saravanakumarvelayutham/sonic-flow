@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Music, Apple, PlayCircle, ArrowRight } from 'lucide-react';
+import { Apple, PlayCircle, Cloud, ArrowRight } from 'lucide-react';
 
 export default function AuthChoosePage() {
   const handleChoose = (service: string) => {
@@ -11,11 +11,11 @@ export default function AuthChoosePage() {
 
   const services = [
     {
-      id: 'spotify',
-      name: 'Spotify',
-      icon: <Music className="w-10 h-10 text-green-500" />,
-      color: 'from-green-500 to-green-600',
-      accent: 'text-green-400',
+      id: 'amazon',
+      name: 'Amazon Music',
+      icon: <Cloud className="w-10 h-10 text-yellow-300" />,
+      color: 'from-yellow-500 to-orange-500',
+      accent: 'text-yellow-300',
     },
     {
       id: 'apple',
